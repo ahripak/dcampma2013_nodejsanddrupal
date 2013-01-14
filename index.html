@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Node.js & Drupal | DrupalCampMA 2013</title>
+    <meta name="author" content="Alexander Hripak">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/default.css" id="theme">
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+      document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+    <!--[if lt IE 9]>
+	<script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="reveal">
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+	<section>
+	  <h1>Node.js</h1>
+	  <h1>& Drupal</h1>
+	  <p>
+	    <small>Created by <a href="http://alexdoesit.com">Alex Hripak</a> / <a href="http://twitter.com/alexh58">@alexh58</a></small>
+	  </p>
+	</section>
+	<section>
+	  <h1>:/ root$ WHOAMI;</h1>	  
+	</section>
+	<section>
+	  <h1>What is Node.js?</h1>
+	  <ul>
+	    <li class="fragment">Server side JavaScript</li>
+	    <li class="fragment">Based on Chrome's V8 JavaScript engine</li>
+	    <li class="fragment">Event Driven</li>
+	    <li class="fragment">Asynchronous in nature</li>
+	  </ul>
+	</section>
+	<section>
+	  <h1>Apache Pitfalls</h1>
+	  <ul>
+	    <li class="fragment">Memory heavy</li>
+	    <li class="fragment">One thread per connection</li>
+	    <li class="fragment">Persistent connections are bad</li>
+	  </ul>
+	  <div class="fragment">
+	    <hr />
+	    <p>Node.js is single process and  multi-threaded. Great for integrating other services.</p>
+	    </div>
+	</section>
+	<section>
+	  <h1>Limiting Factors</h1>
+	  <p><strong>With Apache...</strong></p>
+	  <ul>
+	    <li>memory_limit</li>
+	    <li>max_execution_time</li>
+	    <li>MaxClients</li>
+	  </ul>
+	  <div class="fragment">
+	    <hr />
+	    <p><strong>With Node.js...</strong></p>
+	    <ul>
+	      <li>How many open sockets can you have?</li>
+	      <li>How much bandwidth can you grab?</li>
+	      <li>How fast can you issue requests?</li>
+	    </ul>
+	  </div>
+	</section>
+	<section>
+	  <section>
+	    <h1>A Good Use Case</h1>
+	    <p><img src="images/node_save_screenshot.png" /></p>
+	  </section>
+	  <section>
+	    <p><img src="images/hook_node_insert_meme.jpg" style="height:90%;" /></p>
+	  </section>
+	  <section>
+	    <h2>Hypothetical Mail With PHP</h2>
+	    <pre><code class="php">$count = 0;
+$emails = array(
+  'alex@example.com',
+  'rob@example.com',
+  'tom@example.com',
+);
+
+foreach($emails as $email) {
+  if(drupal_mail($module, $key, $email, language_default(), array(), 'alex@left-click.us', TRUE)) {
+    $count++;
+  }
+}
+
+echo "We sent {$count} email(s).";</code></pre>
+	  </section>
+	  <section>
+	    <h2>Hypothetical Mail With Node.js</h2>
+	    <pre><code class="javascript">var mail = require('mail');
+var emails = [
+  'alex@example.com',
+  'rob@example.com',
+  'tom@example.com'
+];
+
+emails.forEach(function(email, i) {
+  mail(email, $message, 'alex@left-click.us', function(error) {
+    if(!error) {
+      count++;
+    }
+    if(i == emails.length - 1) {
+      console.log("We sent " + count + " email(s).");
+    }
+  });
+});</code></pre>
+	  </section>
+	</section>
+	<section>
+	  <h1>Yea yea yea...</h1>
+	  <br />
+	  <h1>Make it work with Drupal Plz!</h1>
+	</section>
+	<section>
+	  <h1>Node.js Module</h1>
+	  <ul>
+	    <li><a href="http://drupal.org/project/nodejs">http://drupal.org/project/nodejs</a></li>
+	    <li>Made by Justin Randell AKA beejeebus</li>
+	    <li>Provides server.js and a Drupal module</li>
+	    <li>It's an API so you can implement node in your own way</li>
+	  </ul>
+	</section>
+	<section>
+	  <section>
+	    <img src="images/int_1.png" />
+	  </section>
+	  <section>
+	    <img src="images/int_2.png" />
+	  </section>
+	  <section>
+	    <img src="images/int_3.png" />
+	  </section>
+	  <section>
+	    <img src="images/int_4.png" />
+	  </section>
+	  <section>
+	    <img src="images/int_5.png" />
+	  </section>
+	  <section>
+	    <img src="images/int_6.png" />
+	  </section>
+	</section>
+	<section>
+	  <section>
+	    <h1>How to Implement</h1>
+	  </section>
+	  <section>
+	    <h2>Server side: Send Event</h2>
+	    <pre><code class="php">$message = (object) array(
+  'channel' => 'mymodule',
+  'data' => array(
+    'mymessage' => 'The Actual Message',
+  ),
+);
+
+nodejs_enqueue_message($message);</code></pre>
+	  </section>
+	  <section>
+	    <h2>Client side: Receive Event</h2>
+	    <pre><code class="javascript">Drupal.Nodejs.callbacks.mymodule = {
+  callback: function(message) {
+    if(message.channel == 'mymodule') {
+      console.log(message.data.mymessage);
+    }
+  }
+};</code></pre>
+	  </section>
+	  <section>
+	    <h2>Hooks</h2>
+	    <ul>
+	      <li><em>hook_nodejs_handlers_info()</em></li>
+	      <li><em>hook_nodejs_user_channels()</em></li>
+	      <li><em>hook_nodejs_auth_check()</em></li>
+	    </ul>
+	    <div class="fragment">
+	      <hr />
+	      <h2>Helper Functions</h2>
+	      <ul>
+		<li>nodejs_add_user_to_channel()</li>
+		<li>nodejs_remove_user_from_channel()</li>
+		<li>nodejs_kick_user()</li>
+		<li>nodejs_broadcast_message()</li>
+	      </ul>
+	      <br />
+	      <br />
+	      <p>You can also <br /><code>drush broadcast-message "Hello" "World"</code></p>
+	    </div>
+	  </section>
+	</section>
+	<section>
+	  <h1>Demo</h1>
+	</section>
+	<section>
+	  <h1>QA & Resources</h1>
+	  <ul>
+	    <li><a href="https://npmjs.org/">https://npmjs.org</a></li>
+	    <li><a href="http://www.youtube.com/watch?v=zQreu722RE8">http://www.youtube.com/watch?v=zQreu722RE8</a></li>
+	    <li><a href="http://theoleschool.com/blog/module-development-nodejs-integration">http://theoleschool.com/blog/module-develop...</a></li>
+	  </ul>
+	  <br /><br />
+          <p>Slides and demo available at</p>
+          <p style="font-size:1.6em;"><a href=""></a></p>
+      </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+    <script>
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/none
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+          // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });  
+    </script>
+  </body>
+</html>
