@@ -107,14 +107,14 @@ var emails = [
 
 emails.forEach(function(email, i) {
   mail(email, $message, 'alex@left-click.us', function(error) {
-    if(!error) {
-      count++;
-    }
+    if(!error) { count++; }
     if(i == emails.length - 1) {
       console.log("We sent " + count + " email(s).");
     }
   });
-});</code></pre>
+});
+
+console.log("We've finished the script.");</code></pre>
 	  </section>
 	</section>
 	<section>
