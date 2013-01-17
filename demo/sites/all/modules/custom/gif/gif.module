@@ -1,0 +1,99 @@
+<?php
+/**
+ * @file
+ * Code for the gif feature.
+ */
+
+include_once 'gif.features.inc';
+
+/**
+ * hook_init().
+ */
+function gif_init() {
+  drupal_add_css(drupal_get_path('module', 'gif') . '/gif.css');
+}
+
+
+/**
+ * hook_action_info().
+ */
+function gif_action_info() {
+  return array(
+    'gif_update_counter_action' => array(
+      'label' => t('Update the counter'),
+      'type' => 'node',
+      'configurable' => TRUE,
+      'triggers' => array('any'),
+    ),
+  );
+}
+
+
+/**
+ * hook_action_form().
+ */
+function gif_update_counter_action_form($context) {
+  $form['node_type'] = array(
+    '#title' => t('Node type to filter on'),
+    '#type' => 'select',
+    '#options' => drupal_map_assoc(array_keys(node_type_get_types())),
+    '#default_value' => isset($context['node_type']) ? $context['node_type'] : '',
+  );
+  return $form;
+}
+
+
+/**
+ * hook_action_submit().
+ */
+function gif_update_counter_action_submit($form, $form_state) {
+  return array('node_type' => $form_state['values']['node_type']);
+}
+
+
+/**
+ * Custom action to update the homepage counter.
+ */
+function gif_update_counter_action(&$entity, $context = array()) {
+
+  // Query for new #
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'gif')
+    ->propertyCondition('status', 1);
+  $result = $query->execute();
+
+  // Then update with our result
+  if(isset($result['node'])) {
+    $new_num = count($result['node']);
+    variable_set('gif_count', $new_num);
+
+    // Prepare the nodejs message
+    $message = (object) array(
+      'channel' => 'gif',
+      'data' => array('number' => $new_num),
+      'callback' => 'gif_refresh'
+    );
+
+    // Send!
+    nodejs_send_message($message);
+  }
+}
+
+
+/**
+ * hook_nodejs_handlers_info().
+ */
+function gif_nodejs_handlers_info() {
+  return array(
+    drupal_get_path('module', 'gif') . '/gif.js',
+  );
+}
+
+
+/**
+ * hook_nodejs_user_channels().
+ */
+function gif_nodejs_user_channels($auth_user) {
+  return array('gif');
+}

@@ -1,0 +1,15 @@
+name = gif
+core = 7.x
+package = gif
+php = 5.2.4
+version = 7.x-1.0
+project = gif
+dependencies[] = ctools
+dependencies[] = features
+dependencies[] = image
+dependencies[] = views
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:1
+features[field][] = node-gif-field_feline
+features[node][] = gif
+features[views_view][] = felines

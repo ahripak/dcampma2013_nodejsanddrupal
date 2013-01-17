@@ -1,0 +1,27 @@
+@import url(http://fonts.googleapis.com/css?family=PT+Mono);
+
+#main-wrapper {
+  margin:0 auto;
+  width:80%;
+}
+
+.view-header h1 {
+  margin:0;
+  font-size:4em;
+  font-family: 'PT Mono', cursive;
+}
+
+.view-header h1 span {
+  color:#00DFFC;
+}
+
+#counter {
+  float:right;
+  font-size:3em;
+  font-family:'PT Mono', cursive;
+  width:375px;
+}
+
+#counter #number {
+  color:#00DFFC;
+}
