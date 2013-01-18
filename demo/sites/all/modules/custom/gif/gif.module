@@ -58,26 +58,24 @@ function gif_update_counter_action(&$entity, $context = array()) {
 
   // Query for new #
   $query = new EntityFieldQuery();
+  $query->count = TRUE; // We don't need details, just a number
   $query->entityCondition('entity_type', 'node')
     ->entityCondition('bundle', 'gif')
     ->propertyCondition('status', 1);
-  $result = $query->execute();
+  $new_num = $query->execute();
 
   // Then update with our result
-  if(isset($result['node'])) {
-    $new_num = count($result['node']);
-    variable_set('gif_count', $new_num);
+  variable_set('gif_count', $new_num);
 
-    // Prepare the nodejs message
-    $message = (object) array(
-      'channel' => 'gif',
-      'data' => array('number' => $new_num),
-      'callback' => 'gif_refresh'
-    );
+  // Prepare the nodejs message
+  $message = (object) array(
+    'channel' => 'gif',
+    'data' => array('number' => $new_num),
+    'callback' => 'gif_refresh'
+  );
 
-    // Send!
-    nodejs_send_message($message);
-  }
+  // Send!
+  nodejs_send_message($message);
 }
 
 
