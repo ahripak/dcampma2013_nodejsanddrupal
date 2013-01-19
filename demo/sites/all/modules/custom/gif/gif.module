@@ -67,10 +67,23 @@ function gif_update_counter_action(&$entity, $context = array()) {
   // Then update with our result
   variable_set('gif_count', $new_num);
 
+  // Generate the markup for our new row
+  $img = file_load($entity->field_feline[LANGUAGE_NONE][0]['fid']);
+  $row  = '<div class="masonry-item views-row">';
+  $row .= '<div class="views-field views-field-field-feline">';
+  $row .= '<div class="field-content">';
+  $row .= render(theme('image_style',
+            array(
+              'style_name' => 'gif',
+              'path' => $img->uri
+            )
+          ));
+  $row .= '</div></div></div>';
+
   // Prepare the nodejs message
   $message = (object) array(
     'channel' => 'gif',
-    'data' => array('number' => $new_num),
+    'data' => array('number' => $new_num, 'row' => $row),
     'callback' => 'gif_refresh'
   );
 
